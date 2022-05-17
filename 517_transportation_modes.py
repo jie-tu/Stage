@@ -55,28 +55,17 @@ def new_layer (path_to_new_layer):
     return writer
 
 def get_mode (attrs):
-    mode = 0
-    if "Libre" in attrs[9] : # pieton
-        if "cyclable" in attrs[1]: # bicyclette
-            if "Libre" in attrs[8]: # vehicule
-                mode = 111 #7
-            else:
-                mode = 11 #6
-        elif "Libre" in attrs[8] :
-            mode = 101 #5
-        else :
-            mode =1
-    else:
-        if "cyclable" in attrs[1]:
-            if "Libre" in attrs[8]:
-                mode = 110 #4
-            else:
-                mode = 10 #2
-        elif "Libre" in attrs[8] :
-            mode = 100 #3
-        else :
-            mode =0
-    return mode
+    a = 1
+    b = 1
+    c = 1
+    if (attrs[3] == 0 ) or (attrs[4] == 0 ) or ("0" in attrs[5]  ) or (attrs[7] == 0 ) or ("0" in attrs[8]) :
+        a = 0 # vehicule
+    if "4" not in attrs[1] :
+        b = 0 # velo
+    if ( "0" in attrs[9]  ) or (( (2 * attrs[11] )- attrs[4]) <4.0 ) :
+        c = 0
+
+    return a * 100 + b * 10 + c
 
 
 path_to_new_layer = "G:/515/new_route.shp"
@@ -126,26 +115,60 @@ for feature in features:
     #print(attrs[27])#acces_vl
     #print(attrs[28])#acces_pied
     #print(attrs[46])#c_postal_g
-
+    #1
+    #2
+    nature = attrs[1]
+    if "Bretelle"    in nature : nature = "1"
+    elif "Chemin"      in nature : nature = "2"
+    elif "Escalier"    in nature : nature = "3"
+    elif "cyclable"    in nature : nature = "4"
+    elif "Rond"        in nature : nature = "5"
+    elif "chaussée"    in nature : nature = "6"
+    elif "empierrée"   in nature : nature = "7"
+    elif "Sentier"     in nature : nature = "8"
+    elif "autoroutier" in nature : nature = "9"
+    else: nature = "0"
+    #3
     nb_voies = attrs[18]
     if nb_voies == None:
         nb_voies =0
-
+    #4
     largeur = attrs[19]
     if largeur == None:
         largeur =0
-
+    #5
+    sens = attrs[22]
+    if "Double"  in sens : sens = "3"
+    elif "inverse" in sens : sens = "2"
+    elif "direct"  in sens : sens = "1"
+    else: sens = "0"
+    #6
+    urban = attrs[25]
+    if "Oui" in urban : urban = "1"
+    else : urban = "0"
+    #7
+    #8
+    acces_vl = attrs[27]
+    if "Libre" in acces_vl: acces_vl = "1"
+    else : acces_vl = "0"
+    #9
     acces_pied = attrs[28]
     if acces_pied ==None:
-        if "autoroutier" in attrs[1] :
-            acces_pied = "Impossible"
-        else:
-            acces_pied = "Libre"
+        if "9" in attrs[1] : #autoroutier
+            acces_pied = "0" #
+        elif "1" in attrs[1]:#Bretelle
+            acces_pied = "0"
+        else : # on verifie pas ici , mais verifie apres dans get_mode
+            acces_pied = "1" # libre
+    elif "Libre" in acces_pied : acces_pied = "1"
+    else: acces_pied = "0"
+    #10
+    #11
     #set attribute
     fet = QgsFeature()
     #fet.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(10,10)))
     fet.setGeometry(geom)
-    fet.setAttributes([attrs[0],attrs[1],attrs[6],nb_voies,largeur,attrs[22],attrs[25],attrs[26],attrs[27],acces_pied,attrs[46]])
+    fet.setAttributes([attrs[0],nature,attrs[6],nb_voies,largeur,sens,urban,attrs[26],acces_vl,acces_pied,attrs[46]])
     writer.addFeature(fet)
 
     #set dict
@@ -170,18 +193,22 @@ for feature in features:
 
     feature_id = Dict[attrs[0]]
 
-    mode = 0
 
-    mon_id = Dict[attrs[0]]
-    mon_feature = new_layer.getFeature(mon_id)
-    mode = get_mode (mon_feature.attributes())
+
 
 
     # from field id, set attrs
     caps = new_layer.dataProvider().capabilities()
     if caps & QgsVectorDataProvider.ChangeAttributeValues:
-        attrs_change = { 11: attrs[63], 12: mode }
+        attrs_change = { 11: attrs[63]}
         new_layer.dataProvider().changeAttributeValues({ feature_id : attrs_change })
+
+        mon_feature = new_layer.getFeature(feature_id)
+        mode = get_mode (mon_feature.attributes())
+
+        attrs_change = { 12: mode }
+        new_layer.dataProvider().changeAttributeValues({ feature_id : attrs_change })
+
 
     if iface.mapCanvas().isCachingEnabled():
         new_layer.triggerRepaint()
@@ -229,7 +256,17 @@ for feature in features:
         voisin_feature = new_layer.getFeature(voisin_id)
         mode2 = get_mode(voisin_feature.attributes())
 
-        mode = mode1 + mode2
+        #mode = mode1 + mode2
+
+        a1 = mode1 % 10
+        a2 = (mode1 // 10) % 10
+        a3 = (mode1 // 100)
+
+        b1 = mode2 % 10
+        b2 = (mode2 // 10) % 10
+        b3 = (mode2 // 100)
+
+        mode = (max (a3,b3) ) * 100 + (max (a2,b2) ) * 10 + (max (a1,b1) )
 
         # from id, get field id
         feature_id = Dict[attrs[0]]
