@@ -12,8 +12,38 @@ def layer(path_to_layer,name_layer):
 path_to_batiment_clip = "G:/518/bati_clip.shp"
 batiment_clip = layer (path_to_batiment_clip,"batiment_layer")
 
+path_to_batiment_single_polygon = "G:/519/batiment_single_polygon.shp"
+processing.run("native:multiparttosingleparts", {'INPUT':batiment_clip, 'OUTPUT': path_to_batiment_single_polygon})
+batiment_single_polygon = layer (path_to_batiment_single_polygon,"batiment_single_polygon")
+print ("batiment_single_parts")
+
+list=[]
+features = batiment_single_polygon.getFeatures()
+for feature in features:
+    geom = feature.geometry()
+    geomSingleType = QgsWkbTypes.isSingleType(geom.wkbType())
+    if geom.type() == QgsWkbTypes.PolygonGeometry:
+        if geomSingleType:
+            if geom.area() < 28:
+                list.append(feature.id())
+        else:
+            if geom.area() < 28:
+                list.append(feature.id())
+    else:
+        print("Unknown or invalid geometry")
+
+caps = batiment_single_polygon.dataProvider().capabilities()
+if caps & QgsVectorDataProvider.DeleteFeatures:
+    res = batiment_single_polygon.dataProvider().deleteFeatures(list)
+
+if iface.mapCanvas().isCachingEnabled():
+    batiment_single_polygon.triggerRepaint()
+else:
+    iface.mapCanvas().refresh()
+######
+
 path_to_batiment_boundary = "G:/519/batiment_boundary.shp"
-processing.run("native:boundary", {'INPUT':batiment_clip , 'OUTPUT': path_to_batiment_boundary})
+processing.run("native:boundary", {'INPUT':batiment_single_polygon , 'OUTPUT': path_to_batiment_boundary})
 batiment_boundary = layer (path_to_batiment_boundary, "batiment_boundary")
 print("batiment_boundary")
 
