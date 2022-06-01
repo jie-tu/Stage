@@ -53,25 +53,23 @@ for feature in features:
 dict_route_bus = {}
 for dict_bus in dict_bati_bus.items():
     batis = dict_bus[0]
-    list_bus = list(dict_bus[1].keys())
-    #print (dict_bati_route [batis])
+    list_bus = [*dict_bus[1]]
     if batis in dict_bati_route.keys():
-        list_route = list(dict_bati_route [batis].keys())
+        list_route = dict_bati_route [batis].keys()
         for route in list_route :
             if route in dict_route_bus.keys():
                 dict_route_bus[route].extend(list_bus)
             else:
                 dict_route_bus[route]= list_bus
     elif (batis[1],batis[0]) in dict_bati_route.keys():
-        list_route = list(dict_bati_route [(batis[1],batis[0])].keys())
+        list_route = [ * dict_bati_route [(batis[1],batis[0])] ]
         for route in list_route :
             if route in dict_route_bus.keys():
                 dict_route_bus[route].extend(list_bus)
             else:
                 dict_route_bus[route]= list_bus
-
 for key, value in dict_route_bus.items():
-    dict_route_bus[key] = list(set(value))
+    dict_route_bus[key] = [ * set(value)]
 #print(dict_route_bus)
 
 
@@ -103,17 +101,17 @@ for feature in features:
 dict_route_velo = {}
 for dict_velo in dict_bati_velo.items():
     batis = dict_velo[0]
-    list_velo = list(dict_velo[1].keys())
+    list_velo = [*dict_velo[1].keys()]
     #print (dict_bati_route [batis])
     if batis in dict_bati_route.keys():
-        list_route = list(dict_bati_route [batis].keys())
+        list_route = [*dict_bati_route [batis].keys()]
         for route in list_route :
             if route in dict_route_velo.keys():
                 dict_route_velo[route].extend(list_velo)
             else:
                 dict_route_velo[route]= list_velo
     elif (batis[1],batis[0]) in dict_bati_route.keys():
-        list_route = list(dict_bati_route [(batis[1],batis[0])].keys())
+        list_route = [*dict_bati_route [(batis[1],batis[0])].keys()]
         for route in list_route :
             if route in dict_route_velo.keys():
                 dict_route_velo[route].extend(list_velo)
@@ -121,7 +119,7 @@ for dict_velo in dict_bati_velo.items():
                 dict_route_velo[route]= list_velo
 
 for key, value in dict_route_velo.items():
-    dict_route_velo[key] = list(set(value))
+    dict_route_velo[key] = [*set(value)]
 #print(dict_route_velo)
 
 
@@ -152,7 +150,7 @@ for feature in features:
                     dict_route_metro[val] = [gares_id]
 
 for key, value in dict_route_metro.items():
-    dict_route_metro[key] = list(set(value))
+    dict_route_metro[key] = [*set(value)]
 #print(dict_route_metro)
 
 ################################################################################
