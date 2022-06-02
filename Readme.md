@@ -20,7 +20,7 @@ affichier l'angle et la distance minimum et maximum pour chaque bâtiment,
 ``
 
 Utiliser l'intersection de ligne layer  et les hub_distance
-pour détective les routes, les bus et les vélos entre deux bâtiments
+pour détecter les routes, les bus et les vélos entre deux bâtiments
 ``
 525_modes/525_modes.py"
 ``
