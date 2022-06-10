@@ -14,11 +14,6 @@ et une liste de distance que nous pouvons calculer minimum et maximum,
 523_distance_entre_batiments/523_processing.py"
 ``
 
-affichier l'angle et la distance minimum et maximum pour chaque bâtiment,
-``
-523_distance_entre_batiments/523_processing.py"
-``
-
 Utiliser l'intersection de ligne layer  et les hub_distance
 pour détecter les routes, les bus et les vélos entre deux bâtiments
 ``
