@@ -26,7 +26,7 @@ class ShpToPopulation{
 
         Path sampleFolder = Paths.get(path);
 
-        for (SimpleFeature feature : ShapeFileReader.getAllFeatures(sampleFolder.resolve("trips.shp").toString())) {
+        for (SimpleFeature feature : ShapeFileReader.getAllFeatures(sampleFolder.resolve("paris_trips.shp").toString())) {
             Geometry geometry = (Geometry) feature.getDefaultGeometry();
             String id = (String) feature.getAttribute("person_id").toString();
             Long trip_index = (Long) feature.getAttribute("trip_index");
